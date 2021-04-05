@@ -8,117 +8,133 @@
         Title="Confusion Matrix" Height="450" Width="800">
     
     <Grid>
-        <TabControl TabStripPlacement="Top" SelectionChanged="TabControl_SelectionChanged" >
-            <TabControl.Resources>
-                <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}" >
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="HeaderTemplate">
-                                <Setter.Value>
-                                    <DataTemplate>
-                                        <TextBlock Text="{TemplateBinding Content}" TextDecorations="Underline"/>
-                                    </DataTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="False">
-                            <Setter Property="Foreground" Value="#B4B4B4" />
-                            <Setter Property="HeaderTemplate">
-                                <Setter.Value>
-                                    <DataTemplate>
-                                        <TextBlock Text="{TemplateBinding Content}" ></TextBlock>
-                                    </DataTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-                <Style TargetType="{x:Type TabPanel}">
-                    <Setter Property="HorizontalAlignment" Value="Left"/>
-                    <Setter Property="Height" Value="{Binding ActualHeight, ElementName=Toolbar_Grid__2, Mode=OneWay}" />
-                </Style>
-            </TabControl.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="9*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
 
-            <!-- 3 TabItem -->
-            <TabItem x:Name="Test_TabItem" Header="Test" Padding="20,10,20,10" >
-                <!-- 4 Test Grid-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="9*" />
-                    </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" >
+            <ToggleButton x:Name="Threshold_Toggle" HorizontalAlignment="Right" VerticalAlignment="Top" Width="150" Height="30" Margin="5" Content="Use Threshold" Click="Threshold_Toggle_Click" />
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*" />
-                        <RowDefinition Height="9*" />
-                    </Grid.RowDefinitions>
+            <TabControl TabStripPlacement="Top" SelectionChanged="TabControl_SelectionChanged" >
+                <TabControl.Resources>
+                    <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}" >
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="HeaderTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <TextBlock Text="{TemplateBinding Content}" TextDecorations="Underline"/>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter Property="Foreground" Value="#B4B4B4" />
+                                <Setter Property="HeaderTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <TextBlock Text="{TemplateBinding Content}" ></TextBlock>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="{x:Type TabPanel}">
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Setter Property="Height" Value="{Binding ActualHeight, ElementName=Toolbar_Grid__2, Mode=OneWay}" />
+                    </Style>
+                </TabControl.Resources>
 
-                    
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Predict" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Actual" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
-                    <Separator Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" Margin="20,0,20,0" />
-                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,20" >
-                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
-                    </StackPanel>
+                <!-- 3 TabItem -->
+                <TabItem x:Name="Test_TabItem" Header="Test" Padding="20,10,20,10" >
+                    <!-- 4 Test Grid-->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="9*" />
+                        </Grid.ColumnDefinitions>
 
-                    <Grid x:Name="Test_Grid" Grid.Row="2" Grid.Column="2" />
-                </Grid>
-            </TabItem>
-            
-            <!-- 3 TabItem -->
-            <TabItem x:Name="Train_TabItem" Header="Train" Padding="20,10,20,10" >
-                <!-- 4 Train Grid-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="9*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*" />
-                        <RowDefinition Height="9*" />
-                    </Grid.RowDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="9*" />
+                        </Grid.RowDefinitions>
 
 
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Predict" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Actual" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
-                    <Separator Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" Margin="20,0,20,0" />
-                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,20" >
-                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
-                    </StackPanel>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Predict" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actual" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
+                        <Separator Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" Margin="20,0,20,0" />
+                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,20" >
+                            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                        </StackPanel>
 
-                    <Grid x:Name="Train_Grid" Grid.Row="2" Grid.Column="2" />
-                </Grid>
-            </TabItem>
+                        <Grid x:Name="Test_Grid" Grid.Row="2" Grid.Column="2" />
+                    </Grid>
+                </TabItem>
 
-            <!-- 3 TabItem -->
-            <TabItem x:Name="All_TabItem" Header="All" Padding="20,10,20,10" >
-                <!-- 4 All Grid-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="9*" />
-                    </Grid.ColumnDefinitions>
+                <!-- 3 TabItem -->
+                <TabItem x:Name="Train_TabItem" Header="Train" Padding="20,10,20,10" >
+                    <!-- 4 Train Grid-->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="9*" />
+                        </Grid.ColumnDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*" />
-                        <RowDefinition Height="9*" />
-                    </Grid.RowDefinitions>
-
-
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Predict" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Actual" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
-                    <Separator Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" Margin="20,0,20,0" />
-                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,20" >
-                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
-                    </StackPanel>
-
-                    <Grid x:Name="All_Grid" Grid.Row="2" Grid.Column="2" />
-                </Grid>
-            </TabItem>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="9*" />
+                        </Grid.RowDefinitions>
 
 
-        </TabControl>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Predict" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actual" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
+                        <Separator Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" Margin="20,0,20,0" />
+                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,20" >
+                            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                        </StackPanel>
+
+                        <Grid x:Name="Train_Grid" Grid.Row="2" Grid.Column="2" />
+                    </Grid>
+                </TabItem>
+
+                <!-- 3 TabItem -->
+                <TabItem x:Name="All_TabItem" Header="All" Padding="20,10,20,10" >
+                    <!-- 4 All Grid-->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="9*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="9*" />
+                        </Grid.RowDefinitions>
+
+
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Predict" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actual" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
+                        <Separator Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" Margin="20,0,20,0" />
+                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,20" >
+                            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                        </StackPanel>
+
+                        <Grid x:Name="All_Grid" Grid.Row="2" Grid.Column="2" />
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <Grid Grid.Row="1" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="9*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="ResultText_TB" Grid.Column="0" />
+            <Button x:Name="ResultText_Btn" Grid.Column="1" Margin="5" Content="Copy" Click="ResultText_Btn_Click" />
+        </Grid>
 
 
 

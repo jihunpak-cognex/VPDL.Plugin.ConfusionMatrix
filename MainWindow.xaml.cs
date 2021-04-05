@@ -14,8 +14,14 @@ namespace VPDL.Plugin.ConfusionMatrix
     /// </summary>
     public partial class MainWindow : Window, IPlugin
     {
+        //[STAThreadAttribute] //Clipboard 용 필요 속성
         List<string> classList = new List<string>();
         int tabNumber = 0; //0 Test, 1 Train, 2 All
+        bool UseThreshold = true; //0 Use, 1 Not Use
+        string resultClipboard = "";
+
+        int TotalNum = 0;
+        int RealNum = 0;
 
         public MainWindow()
         {
@@ -90,50 +96,31 @@ namespace VPDL.Plugin.ConfusionMatrix
         /// </summary>
         int IPlugin.Version { get { return 1; } }
 
-        //void Run()
-        //{
-        //    string message;
-        //    IWorkspace workspace = context.MainWindow.WorkspaceBrowserViewModel.CurrentWorkspace;
-        //    if (workspace == null)
-        //        message = "No workspace selected";
-        //    else
-        //    {
-        //        message = $"Current workspace is : {workspace.DisplayName}{Environment.NewLine}";
-        //        IStream stream = context.MainWindow.ToolChainViewModel.Stream;
-
-        //        if (stream != null)
-        //        {
-        //            message += $"Current stream is : {stream.Name}{ Environment.NewLine}";
-
-        //            ITool tool = context.MainWindow.ToolChainViewModel.Tool;
-        //            if (tool != null)
-        //            {
-        //                message += $"Current tool is : {tool.Name} ({tool.Type})";
-        //            }
-        //        }
-        //    }
-
-        //    MessageBox.Show(message, "Confusion Matrix Plugin", MessageBoxButton.OK, MessageBoxImage.Information);
-        //}
 
 
         private void Run()
         {
-            IWorkspace workspace = context.MainWindow.WorkspaceBrowserViewModel.CurrentWorkspace;
-
-            if (workspace == null)
-                MessageBox.Show("No current workspace");
-            else
+            try
             {
-                this.Show();
-                //ShowConfusionMatrix();
+                IWorkspace workspace = context.MainWindow.WorkspaceBrowserViewModel.CurrentWorkspace;
 
-                //context.MainWindow.WorkspaceBrowserViewModel.WorkspaceSelected += WorkspaceBrowserViewModel_WorkspaceSelected;
-                //context.MainWindow.ToolChainViewModel.StreamSelected += ToolChainViewModel_StreamSelected;
-                context.MainWindow.ToolChainViewModel.ToolSelected += ToolChainViewModel_ToolSelected;
-                context.MainWindow.DatabaseExplorerViewModel.PropertyChanged += SampleViewerViewModel_PropertyChanged;
+                if (workspace == null)
+                    MessageBox.Show("No current workspace");
+                else
+                {
+                    this.Show();
+                    //ShowConfusionMatrix();
 
+                    //context.MainWindow.WorkspaceBrowserViewModel.WorkspaceSelected += WorkspaceBrowserViewModel_WorkspaceSelected;
+                    //context.MainWindow.ToolChainViewModel.StreamSelected += ToolChainViewModel_StreamSelected;
+                    context.MainWindow.ToolChainViewModel.ToolSelected += ToolChainViewModel_ToolSelected;
+                    context.MainWindow.DatabaseExplorerViewModel.PropertyChanged += SampleViewerViewModel_PropertyChanged;
 
+                }
+            }
+            catch
+            { 
+            
             }
         }
 
@@ -151,18 +138,19 @@ namespace VPDL.Plugin.ConfusionMatrix
             if (context.MainWindow.DatabaseExplorerViewModel == null) return;
             context.MainWindow.DatabaseExplorerViewModel.PropertyChanged += SampleViewerViewModel_PropertyChanged;
 
-            ShowConfusionMatrix();
+            UpdateConfusionMatrix();
         }
         private void SampleViewerViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            ShowConfusionMatrix();
+            UpdateConfusionMatrix();
         }
 
-        private void ShowConfusionMatrix()
+        private void UpdateConfusionMatrix()
         {
             if (IsException()) return;
             MakeClassList();
             MakeConfusionMatrix();
+            ShowResultText();
         }
 
         private bool IsException()
@@ -255,11 +243,14 @@ namespace VPDL.Plugin.ConfusionMatrix
                     else
                     {
                         string filter = MakeResultFilter(col, row);
-
+                                                
                         IGreenTool tool = context.MainWindow.ToolChainViewModel.Tool as IGreenTool;
                         var database = tool.Database;
                         var tempList = database.List(filter);
                         int countView = tempList.Count;
+
+                        TotalNum += countView;
+                        RealNum += row == col ? countView : 0;
 
                         Button tempButton = new Button();
                         tempButton.Content = countView;
@@ -278,13 +269,16 @@ namespace VPDL.Plugin.ConfusionMatrix
             }
         }
 
-        private string MakeResultFilter(int actualRow, int predictCol)
+        private string MakeResultFilter(int Col, int Row)
         {
             string resultFilter = string.Empty;
 
-            string actual = "tag![name='" + classList[actualRow - 1] + "']";
-            string predict = " and best_tag='" + classList[predictCol - 1] + "'";
+            string predict = " and best_tag='" + classList[Col - 1] + "'";
+            string actual = "tag![name='" + classList[Row - 1] + "']";
             string traintest = string.Empty;
+            string threshold = UseThreshold == true ? "and score>threshold" : "";
+
+
             switch (tabNumber)
             {
                 case 0:
@@ -303,7 +297,7 @@ namespace VPDL.Plugin.ConfusionMatrix
                     return string.Empty;
             }
 
-            return resultFilter = actual + predict + traintest;
+            return resultFilter = actual + predict + traintest + threshold;
         }
 
         private void ConfusionMatrixValue_Btn_Click(object sender, RoutedEventArgs e)
@@ -336,7 +330,43 @@ namespace VPDL.Plugin.ConfusionMatrix
                     return;
             }
 
-            ShowConfusionMatrix();
+            UpdateConfusionMatrix();
         }
+
+        private void Threshold_Toggle_Click(object sender, RoutedEventArgs e)
+        {
+            if (UseThreshold)
+            {
+                Threshold_Toggle.Content = "Threshold Mode";
+                UseThreshold = false;
+            }
+            else
+            {
+                Threshold_Toggle.Content = "Not Threshold Mode";
+                UseThreshold = true;
+            }
+
+            UpdateConfusionMatrix();
+        }
+
+        private void ShowResultText()
+        {
+            //string precision = "";
+            //string recall = "";
+
+            //double acc = ((double)RealNum / (double)TotalNum) * 100;
+
+            //ResultText_TB.Text = "Acc : " + acc.ToString();
+        }
+
+        private void ResultText_Btn_Click(object sender, RoutedEventArgs e)
+        {
+            //string newline = "\n";
+            //string tab = "\t";
+            //string resultClipboard = tab + "Actual" + newline + "Predict" + "1" + newline + "Result" + tab + tab + "Check";
+            //Clipboard.SetText(resultClipboard);
+        }
+
+
     }
 }
