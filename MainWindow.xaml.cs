@@ -19,9 +19,9 @@ namespace VPDL.Plugin.ConfusionMatrix
         int tabNumber = 0; //0 Test, 1 Train, 2 All
         bool UseThreshold = true; //0 Use, 1 Not Use
         string resultClipboard = "";
+        double[,] confusionMatrix;
 
-        int TotalNum = 0;
-        int RealNum = 0;
+
 
         public MainWindow()
         {
@@ -184,6 +184,7 @@ namespace VPDL.Plugin.ConfusionMatrix
         private void MakeConfusionMatrix()
         {
             int totalGrid = classList.Count + 1; // Class Label도 있기 때문에 1개 추가
+            double[,] tempConfusionMatrix = new double[classList.Count, classList.Count];
 
             Grid thisGrid;
             switch (tabNumber)
@@ -220,6 +221,7 @@ namespace VPDL.Plugin.ConfusionMatrix
                 tempRow.Height = gridNum == 0 ? new GridLength(40) : new GridLength(1, GridUnitType.Star);
             }
 
+
             for (int col = 0; col < totalGrid; col++)
             {
                 for (int row = 0; row < totalGrid; row++)
@@ -249,8 +251,7 @@ namespace VPDL.Plugin.ConfusionMatrix
                         var tempList = database.List(filter);
                         int countView = tempList.Count;
 
-                        TotalNum += countView;
-                        RealNum += row == col ? countView : 0;
+                        tempConfusionMatrix[col - 1, row - 1] = countView;
 
                         Button tempButton = new Button();
                         tempButton.Content = countView;
@@ -267,6 +268,8 @@ namespace VPDL.Plugin.ConfusionMatrix
                     }
                 }
             }
+
+            confusionMatrix = tempConfusionMatrix;
         }
 
         private string MakeResultFilter(int Col, int Row)
@@ -356,15 +359,53 @@ namespace VPDL.Plugin.ConfusionMatrix
 
             //double acc = ((double)RealNum / (double)TotalNum) * 100;
 
-            //ResultText_TB.Text = "Acc : " + acc.ToString();
+            int sum = (int)confusionMatrix.Cast<double>().Sum();
+            int correctSum = 0;
+
+            for (int j = 0; j < confusionMatrix.GetLength(1); j++)
+            {
+                for (int i = 0; i < confusionMatrix.GetLength(0); i++)
+                {
+                    if (i == j)
+                    {
+                        correctSum += (int)confusionMatrix[i, j];
+                    }
+                }
+            }
+
+            double acc = (double)correctSum / (double)sum * 100;
+
+            ResultText_TB.Text = "Total : " + sum.ToString() + "  /  Acc : " + string.Format("{0:0.00}", acc);
         }
 
         private void ResultText_Btn_Click(object sender, RoutedEventArgs e)
         {
+
             //string newline = "\n";
             //string tab = "\t";
             //string resultClipboard = tab + "Actual" + newline + "Predict" + "1" + newline + "Result" + tab + tab + "Check";
-            //Clipboard.SetText(resultClipboard);
+
+            string a = "";
+            for (int j = 0; j < confusionMatrix.GetLength(1); j++)
+            {
+                for (int i = 0; i < confusionMatrix.GetLength(0); i++)
+                {
+                    a += confusionMatrix[i, j].ToString();
+                    
+                    if (i != confusionMatrix.GetLength(0) - 1)
+                    {
+                        a += "\t";
+                    }
+                }
+
+                if (j != confusionMatrix.GetLength(1) - 1)
+                {
+                    a += "\n";
+                }
+
+            }
+
+            Clipboard.SetText(a);
         }
 
 
